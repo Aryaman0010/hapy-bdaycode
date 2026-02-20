@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy Birthday Gadhi!</title>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600&family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-pink: #ff85a2;
+            --soft-pink: #fbb1bd;
+            --white-pink: #fff0f3;
+            --dark-pink: #ff4d6d;
+            --parchment: #fcf5e5;
+        }
+
+        body {
+            margin: 0; padding: 0;
+            background-color: var(--white-pink);
+            font-family: 'Poppins', sans-serif;
+            display: flex; flex-direction: column; align-items: center;
+            overflow-x: hidden; min-height: 100vh;
+            color: var(--dark-pink);
+            cursor: crosshair;
+        }
+
+        /* --- Background & Fill Decor --- */
+        #hearts-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: -1; }
+        
+        .header-note {
+            text-align: center; margin-top: 15px; font-size: 0.9rem;
+            letter-spacing: 2px; font-style: italic; color: var(--soft-pink);
+            animation: fadeIn 2s ease-in;
+        }
+
+        .corner-decor { position: fixed; font-size: 40px; opacity: 0.5; z-index: -1; user-select: none; }
+        .top-left { top: 10px; left: 10px; }
+        .top-right { top: 10px; right: 10px; }
+        .bottom-left { bottom: 10px; left: 10px; }
+        .bottom-right { bottom: 10px; right: 10px; }
+
+        .balloon {
+            position: absolute; font-size: 45px; user-select: none; z-index: -1;
+            animation: floatUp 5s ease-in-out infinite alternate;
+        }
+
+        @keyframes floatUp {
+            from { transform: translateY(0) rotate(-5deg); }
+            to { transform: translateY(-35px) rotate(5deg); }
+        }
+
+        /* --- Animations --- */
+        .falling-emoji { position: fixed; top: -50px; pointer-events: none; z-index: 999; animation: fall linear forwards; }
+        .firework-particle { position: fixed; pointer-events: none; width: 8px; height: 8px; border-radius: 50%; z-index: 10000; animation: explode 0.8s ease-out forwards; }
+        .sparkle { position: absolute; width: 6px; height: 6px; background: gold; border-radius: 50%; pointer-events: none; z-index: 999; animation: twinkle 1s infinite; }
+        .falling-chocolate { position: absolute; font-size: 25px; pointer-events: none; animation: drop 1.5s ease-in forwards; }
+
+        @keyframes fall { to { transform: translateY(110vh) rotate(360deg); } }
+        @keyframes explode { 0% { transform: translate(0, 0); opacity: 1; } 100% { transform: translate(var(--x), var(--y)); opacity: 0; } }
+        @keyframes twinkle { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+        @keyframes drop { 0% { transform: translateY(0); } 100% { transform: translateY(100vh) rotate(720deg); opacity: 0; } }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        /* --- Title & Carousel --- */
+        .title-container { margin-top: 20px; display: flex; flex-wrap: wrap; justify-content: center; z-index: 10; padding: 0 10px; }
+        .floating-letter { display: inline-block; font-size: clamp(1.5rem, 5vw, 2.5rem); font-weight: 800; animation: float 3s ease-in-out infinite; }
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
+
+        .carousel-wrapper { width: 100%; height: 100px; overflow: hidden; background: rgba(255, 182, 193, 0.2); margin: 20px 0; display: flex; align-items: center; position: relative; }
+        .carousel-track { display: flex; white-space: nowrap; position: absolute; left: 0; animation: scrollMarquee 35s linear infinite; }
+        .carousel-word { font-size: 1.5rem; margin: 0 40px; transition: all 0.3s ease; opacity: 0.2; transform: scale(0.8); display: inline-block; }
+        .carousel-word.highlight { opacity: 1; transform: scale(1.5); font-weight: 800; color: var(--dark-pink); text-shadow: 0 0 15px #fff; }
+        @keyframes scrollMarquee { from { transform: translateX(100vw); } to { transform: translateX(-100%); } }
+
+        /* --- Countdown Overlay Styles --- */
+        #countdown-container {
+            text-align: center;
+            background: white;
+            padding: 25px;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(255, 133, 162, 0.3);
+            border: 3px dashed var(--primary-pink);
+            margin: 20px;
+            z-index: 20;
+        }
+        #timer-digits {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--dark-pink);
+        }
+        .timer-segment { display: flex; flex-direction: column; align-items: center; }
+        .timer-label { font-size: 0.6rem; text-transform: uppercase; color: var(--soft-pink); margin-top: -5px; }
+
+        /* --- Games & Interactive --- */
+        .game-area { display: none; background: white; padding: 30px 25px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); text-align: center; border: 2px solid var(--soft-pink); width: 280px; position: relative; margin-top: 50px; z-index: 10; }
+        #hamster-mascot { position: absolute; top: -50px; left: 50%; font-size: 45px; transition: all 0.3s ease; transform: translateX(-50%); display: none; }
+        .hamster-walking { animation: walk 4s linear infinite; }
+        @keyframes walk { 0% { left: 20%; } 50% { left: 80%; transform: translateX(-50%) scaleX(-1); } 100% { left: 20%; } }
+        
+        input { border: 2px solid var(--soft-pink); padding: 12px; border-radius: 10px; width: 85%; margin-bottom: 10px; font-family: 'Poppins'; outline: none; }
+        button { background: var(--dark-pink); color: white; border: none; padding: 10px 25px; border-radius: 10px; cursor: pointer; font-weight: bold; transition: transform 0.2s; }
+        button:active { transform: scale(0.9); }
+
+        #scratchContainer { display: none; position: relative; width: 240px; height: 120px; margin: 20px auto; background: #fff; border: 3px dashed var(--primary-pink); border-radius: 15px; overflow: hidden; z-index: 10; }
+        #scratchNumber { position: absolute; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 50px; font-weight: 800; color: var(--dark-pink); z-index: 1; }
+        #scratchCanvas { position: absolute; top: 0; left: 0; z-index: 2; cursor: crosshair; touch-action: none; }
+
+        /* --- The Scroll & Media --- */
+        .scroll-wrapper { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 100; width: 95%; max-width: 600px; height: 0; background: var(--parchment); overflow-y: auto; transition: height 2s ease-in-out; border-left: 15px solid #d4a373; border-right: 15px solid #d4a373; box-shadow: 0 0 60px rgba(0,0,0,0.5); }
+        .scroll-open { height: 90vh; }
+        .scroll-content { padding: 60px 30px; font-family: 'Dancing Script', cursive; font-size: 1.4rem; color: #5d4037; text-align: center; line-height: 1.6; }
+
+        .media-gallery { margin-top: 50px; border-top: 2px dashed #d4a373; padding-top: 30px; display: flex; flex-direction: column; align-items: center; gap: 40px; }
+        .video-box { width: 90%; background: white; padding: 10px; border-radius: 15px; box-shadow: 0 0 20px var(--soft-pink); position: relative; }
+        .video-box video { width: 100%; border-radius: 10px; }
+        .sparkle-frame::after { content: '✨'; position: absolute; top: -10px; right: -10px; font-size: 25px; animation: twinkle 1.5s infinite; }
+
+        .slideshow-container { width: 250px; height: 350px; position: relative; margin-bottom: 50px; }
+        .slide { position: absolute; width: 100%; height: 100%; border: 12px solid white; border-bottom: 50px solid white; box-shadow: 0 15px 30px rgba(0,0,0,0.2); transition: 0.8s ease-in-out; opacity: 0; transform: scale(0.9); }
+        .slide img { width: 100%; height: 100%; object-fit: cover; }
+        .slide.active { opacity: 1; transform: scale(1); z-index: 5; }
+        
+        /* Polaroid Tilts */
+        .slide:nth-child(odd) { transform: rotate(-3deg); }
+        .slide:nth-child(even) { transform: rotate(3deg); }
+
+        #mailbox { display: none; font-size: 80px; cursor: pointer; text-align: center; margin: 30px; transition: transform 0.3s; z-index: 10; }
+        #mailbox:hover { transform: scale(1.2); }
+    </style>
+</head>
+<body>
+
+    <div class="header-note">✨ AUTHORIZED ACCESS: BIRTHDAY GIRL ONLY ✨</div>
+    <div class="corner-decor top-left">🌸</div>
+    <div class="corner-decor top-right">🌺</div>
+    <div class="corner-decor bottom-left">🌼</div>
+    <div class="corner-decor bottom-right">🌻</div>
+
+    <div class="balloon" style="left: 8%; top: 15%;">🎈</div>
+    <div class="balloon" style="right: 12%; top: 22%; animation-delay: 1s;">🎁</div>
+    <div class="balloon" style="left: 15%; bottom: 15%; animation-delay: 2s;">🎂</div>
+    <div class="balloon" style="right: 8%; bottom: 20%; animation-delay: 0.5s;">🎉</div>
+
+    <div id="hearts-container"></div>
+    <div class="title-container" id="title"></div>
+    
+    <div class="carousel-wrapper">
+        <div class="carousel-track" id="carouselTrack"></div>
+    </div>
+
+    <div id="countdown-container">
+        <p style="margin-bottom: 10px; font-weight: 600;">🎁 Your Gift Unlocks In...</p>
+        <div id="timer-digits">
+            <div class="timer-segment"><span id="days">00</span><span class="timer-label">Days</span></div>
+            <div class="timer-segment"><span id="hours">00</span><span class="timer-label">Hrs</span></div>
+            <div class="timer-segment"><span id="minutes">00</span><span class="timer-label">Min</span></div>
+            <div class="timer-segment"><span id="seconds-countdown">00</span><span class="timer-label">Sec</span></div>
+        </div>
+    </div>
+
+    <div id="gift-box" style="display: none; font-size: 150px; cursor: pointer; z-index: 10; filter: drop-shadow(0 10px 20px rgba(0,0,0,0.1));">🎁</div>
+
+    <div class="game-area" id="gameArea">
+        <div id="hamster-mascot" class="hamster-walking">🐹</div>
+        <p><strong>What do you call me?</strong></p>
+        <input type="text" id="answerInput" placeholder="Type here...">
+        <button onclick="checkAnswer()">press me🌚</button>
+        <p id="feedbackText" style="margin-top:10px; font-weight:600; min-height: 40px;"></p>
+    </div>
+
+    <div id="scratchContainer">
+        <div id="scratchNumber">459</div>
+        <canvas id="scratchCanvas" width="240" height="120"></canvas>
+    </div>
+
+    <div id="timer-display" style="display:none; text-align:center; font-weight:800; font-size: 1.2rem; margin: 20px;">Your Mail is incoming..... <span id="seconds">5</span>s</div>
+    
+    <div id="mailbox">
+        <img id="mailboxGif" src="mailbox.gif" alt="New Mail!">
+        <p style="font-family: 'Poppins'; font-size: 0.8rem;">(There somthing in mailBox..Open it dumb🍑)</p>
+    </div>
+
+    <div class="scroll-wrapper" id="letterScroll">
+        <div class="scroll-content">
+            <p>yoooo motuuu aka gadhii aka chasmish akaaaaaaaaaaa cutieee cutiessttt cuterr aahhhhhhhhhh fk u for being soooo cute, like whenever i think about only you, your cute face come/came(maafii for my angrejii🙇) sooo you areeee cuteeieeee cutessttt cuttttttttiiiiesttt supercalifragalisticexpialidocious hehehehehehhe ,this is the letter um A letter to the youuuu 🫵, i have nothing to say but buttt idk, have a good lyfe with your goody goody umm hmm awara ig... i know your bday is today so happyy bdayy motuu sorryy because im having second thought ki bday h ya nhi!! sooooo still happy bdayyyy😤 umm this code is AI generated (again sorry but i tried to make it as good as possible if it disappoint you so i'm sorry from the start!! ) because itna acha coder hota to jada number ata scratch me 🤓if you get it then you so samrtt gadhiii 😋umm hello hiee (bye ache se manana happy bday) and another thing you are sooooooooooooo cuteeeeeeeee cutiee pieeee (gadhi bolne ke liye maafi, from bottom of my soul but sorry hehe and good bye ig cutieeeeeeeeeee motii piee 🎀🎀soo cutee bday girllllll )
+                or haa wo scratch me jo number hai wo !! syd kal tk tumko pata chal jyega hehe... umm jo bhi ho rakh lena 🥲.... I beg from you 🛐...
+                hehe no need to thanks... 🤗
+            </p>
+
+            <div class="media-gallery">
+                <div class="video-box sparkle-frame">
+                    <video id="v1" muted loop playsinline autoplay><source src="shwetha_sahani-20250425-0001.mp4" type="video/mp4"></video>
+                </div>
+                <p style="font-family: 'Poppins'; font-size: 0.8rem;">(bday girl looks so delicious🤤🎀👆)</p>
+                <div class="video-box">
+                    <video id="v2" muted loop playsinline><source src="shwetha_sahani-20250522-0001.mp4" type="video/mp4"></video>
+                </div>
+                <p style="font-family: 'Poppins'; font-size: 0.8rem;">(justt woww🎀🙇‍♂️)</p>
+                <div class="video-box">
+                    <video id="v3" muted loop playsinline><source src="Snapchat-340700208.mp4" type="video/mp4"></video>
+                </div>
+                <p style="font-family: 'Poppins'; font-size: 0.8rem;">(kittiii pyarii hai ye... thu thu nzr nh lage🧿🥹)</p>
+
+                <div class="slideshow-container">
+                    <div class="slide active"><img src="IMG_20250222_235554.jpg"></div>
+                    <div class="slide"><img src="shwetha_sahani-20250407-0001.jpg"></div>
+                    <div class="slide"><img src="Snapchat-199857332.jpg"></div>
+                </div>
+                <p style="font-family: 'Poppins'; font-size: 0.8rem;">(My cutessttt✨🌟 ♾️cutie muwahhh🎀💖)</p>
+                <p style="font-family: 'Poppins'; font-size: 0.8rem;">(umm ik i used your pic and vdo... sorry for that... i'll make sure to delete this at 21/02/2026 11:59:59..... hehe 🤓)</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- 0. Birthday Lockdown Timer ---
+        function checkBirthdayTime() {
+            const target = new Date("February 21, 2026 00:00:00").getTime();
+            const now = new Date().getTime();
+            const diff = target - now;
+
+            if (diff <= 0) {
+                document.getElementById('countdown-container').style.display = 'none';
+                document.getElementById('gift-box').style.display = 'block';
+                clearInterval(timerInterval);
+                return;
+            }
+
+            const d = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            const s = Math.floor((diff % (1000 * 60)) / 1000);
+
+            document.getElementById('days').innerText = d.toString().padStart(2, '0');
+            document.getElementById('hours').innerText = h.toString().padStart(2, '0');
+            document.getElementById('minutes').innerText = m.toString().padStart(2, '0');
+            document.getElementById('seconds-countdown').innerText = s.toString().padStart(2, '0');
+        }
+        const timerInterval = setInterval(checkBirthdayTime, 1000);
+        checkBirthdayTime();
+
+        // --- 1. Falling Elements (Hearts/Stars) ---
+        const fallingEmojis = ['💌','💝','💖','💗','💓','💞','💕','💘','💟','❣️','❤️','🩷','💛','💚','🩶','🤍','♥️','🫶','🫰','💫','🌟','✨'];
+        
+        function createFallingEmoji() {
+            const el = document.createElement('div');
+            el.className = 'falling-emoji';
+            el.innerText = fallingEmojis[Math.floor(Math.random() * fallingEmojis.length)];
+            el.style.left = Math.random() * 100 + 'vw';
+            el.style.fontSize = (Math.random() * 20 + 15) + 'px';
+            el.style.animationDuration = (Math.random() * 3 + 4) + 's'; 
+            el.style.opacity = Math.random() * 0.4 + 0.4;
+            document.body.appendChild(el);
+            setTimeout(() => el.remove(), 6000);
+        }
+        setInterval(createFallingEmoji, 400);
+
+        // --- 2. Firework Crackers ---
+        function createFirework() {
+            for (let i = 0; i < 50; i++) {
+                const p = document.createElement('div');
+                p.className = 'firework-particle';
+                const colors = ['#ff85a2', '#ff4d6d', 'gold', '#fff', '#00f2ff'];
+                p.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                
+                const gameArea = document.getElementById('gameArea').getBoundingClientRect();
+                p.style.left = (gameArea.left + gameArea.width / 2) + 'px';
+                p.style.top = (gameArea.top + gameArea.height / 2) + 'px';
+                
+                const angle = Math.random() * Math.PI * 2;
+                const velocity = Math.random() * 180 + 60;
+                p.style.setProperty('--x', Math.cos(angle) * velocity + 'px');
+                p.style.setProperty('--y', Math.sin(angle) * velocity + 'px');
+                
+                document.body.appendChild(p);
+                setTimeout(() => p.remove(), 800);
+            }
+        }
+
+        // --- 3. Interactive Mouse Effects ---
+        document.addEventListener('mousemove', (e) => {
+            const s = document.createElement('div'); s.className = 'sparkle';
+            s.style.left = e.pageX + 'px'; s.style.top = e.pageY + 'px';
+            document.body.appendChild(s); setTimeout(() => s.remove(), 800);
+        });
+
+        document.addEventListener('click', (e) => {
+            const c = document.createElement('div'); c.className = 'falling-chocolate'; c.innerHTML = '🍫';
+            c.style.left = e.pageX + 'px'; c.style.top = e.pageY + 'px';
+            document.body.appendChild(c); setTimeout(() => c.remove(), 1500);
+        });
+
+        // --- 4. Content Setup ---
+        const titleStr = "Happy birthday my cutiessttt gadhiiii";
+        titleStr.split('').forEach((c, i) => {
+            const s = document.createElement('span'); s.className = 'floating-letter';
+            s.innerText = c === ' ' ? '\u00A0' : c; s.style.animationDelay = `${i * 0.1}s`;
+            document.getElementById('title').appendChild(s);
+        });
+
+        const words = "My cutieesttt cutieee of the cutesttt cuteness adorable just wowww.... Supercalifragilisticexpialidocious motuu gadhiiii".split(' ');
+        const track = document.getElementById('carouselTrack');
+        [...words, ...words, ...words].forEach(w => {
+            const s = document.createElement('span'); s.className = 'carousel-word'; s.innerText = w;
+            track.appendChild(s);
+        });
+
+        function highlightWords() {
+            const centerX = window.innerWidth / 2;
+            document.querySelectorAll('.carousel-word').forEach(word => {
+                const rect = word.getBoundingClientRect();
+                const wordCenter = rect.left + rect.width / 2;
+                if (Math.abs(centerX - wordCenter) < 60) word.classList.add('highlight');
+                else word.classList.remove('highlight');
+            });
+            requestAnimationFrame(highlightWords);
+        }
+        highlightWords();
+
+        // --- 5. Game Logic ---
+        let wrongCount = 0;
+        const hamster = document.getElementById('hamster-mascot');
+        document.getElementById('gift-box').onclick = function() {
+            this.style.display = 'none';
+            document.getElementById('gameArea').style.display = 'block';
+            hamster.style.display = 'block';
+        };
+
+        function checkAnswer() {
+            const val = document.getElementById('answerInput').value.toLowerCase().trim();
+            const feedback = document.getElementById('feedbackText');
+            if (["bachha", "baccha", "bbg"].includes(val)) {
+                hamster.innerText = '😎';
+                feedback.innerText = "you are the cutest cutieee cuteessssttrrt! ✨";
+                createFirework(); 
+                setTimeout(createFirework, 250);
+
+                setTimeout(() => { 
+                    document.getElementById('gameArea').style.display = 'none'; 
+                    showScratch(); 
+                }, 1500);
+            } else {
+                wrongCount++; hamster.innerText = '😑';
+                if (wrongCount === 1) feedback.innerText = "wrong answer motu";
+                else if (wrongCount === 2) feedback.innerText = "ohh motuu... umm 👉👶👈";
+                else if (wrongCount === 3) feedback.innerText = "sachme gadhi ho kyaaa 😒....hint bhi smjh nhi aya?👶";
+                else if (wrongCount === 4) feedback.innerText = "ahhhh😭😩..fkkk u 👶(come on yrr 🥹🥲)";
+                else feedback.innerText = "I'm not your b̲b̲g̲?̲ B̲a̲c̲c̲h̲a̲?̲ Ig I'm not anymore 😺... Nvm";
+            }
+        }
+
+        // Scratch Card
+        function showScratch() {
+            document.getElementById('scratchContainer').style.display = 'block';
+            const canvas = document.getElementById('scratchCanvas');
+            const ctx = canvas.getContext('2d');
+            ctx.fillStyle = '#C0C0C0'; ctx.fillRect(0, 0, 240, 120);
+            ctx.fillStyle = '#444'; ctx.font = 'bold 16px Poppins'; ctx.textAlign = 'center';
+            ctx.fillText('Scratch for Secret Code', 120, 65);
+
+            let isScratching = false;
+            function scratch(e) {
+                if (!isScratching) return;
+                const rect = canvas.getBoundingClientRect();
+                const x = (e.clientX || (e.touches ? e.touches[0].clientX : 0)) - rect.left;
+                const y = (e.clientY || (e.touches ? e.touches[0].clientY : 0)) - rect.top;
+                ctx.globalCompositeOperation = 'destination-out';
+                ctx.beginPath(); ctx.arc(x, y, 25, 0, Math.PI * 2); ctx.fill();
+                startTimer();
+            }
+            canvas.onmousedown = () => isScratching = true;
+            canvas.onmouseup = () => isScratching = false;
+            canvas.onmousemove = scratch;
+            canvas.ontouchstart = (e) => { isScratching = true; scratch(e); };
+            canvas.ontouchend = () => isScratching = false;
+            canvas.ontouchmove = scratch;
+        }
+
+        let tStarted = false;
+        function startTimer() {
+            if (tStarted) return; tStarted = true;
+            document.getElementById('timer-display').style.display = 'block';
+            let s = 5;
+            const i = setInterval(() => {
+                s--; document.getElementById('seconds').innerText = s;
+                if (s <= 0) {
+                    clearInterval(i);
+                    document.getElementById('timer-display').style.display = 'none';
+                    document.getElementById('scratchContainer').style.display = 'none';
+                    document.getElementById('mailbox').style.display = 'block';
+                }
+            }, 1000);
+        }
+
+        document.getElementById('mailbox').onclick = () => {
+            document.getElementById('mailbox').style.display = 'none';
+            const sc = document.getElementById('letterScroll');
+            sc.style.display = 'block';
+            setTimeout(() => {
+                sc.classList.add('scroll-open');
+                startSlideshow();
+                document.querySelectorAll('video').forEach(v => v.play());
+            }, 100);
+        };
+
+        function startSlideshow() {
+            let index = 0; const slides = document.querySelectorAll('.slide');
+            setInterval(() => {
+                slides[index].classList.remove('active');
+                index = (index + 1) % slides.length;
+                slides[index].classList.add('active');
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
